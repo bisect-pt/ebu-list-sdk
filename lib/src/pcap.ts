@@ -38,15 +38,4 @@ export class Pcap {
         ]);
         return result as IPcapUploadResult;
     }
-
-    // public makeAnalysisAwaiter(pcapId: PcapId, timeoutMs: number): Promise<any> {
-    //     console.log('makeAnalysisAwaiter');
-    //     return this.transport.ws.makeAwaiter<object>(
-    //         'batatas',
-    //         (data: any) => {
-    //             return false;
-    //         },
-    //         timeoutMs
-    //     );
-    // }
 }
