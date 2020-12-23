@@ -1,5 +1,6 @@
 import { LIST } from '@bisect/ebu-list-sdk';
 import { IArgs } from '../../types';
+import fs from 'fs';
 
 export const run = async (args: IArgs) => {
     if(!args._ || args._.length < 2) {
@@ -10,7 +11,9 @@ export const run = async (args: IArgs) => {
 
     const list = await LIST.connectWithOptions(args);
 
-    const uploadResult = await list.pcap.upload('A pcap file', pcapFile);
+    const stream = fs.createReadStream(pcapFile)
+
+    const uploadResult = await list.pcap.upload('A pcap file', stream);
     const pcapId = uploadResult.uuid;
 
     console.log(`PCAP ID: ${pcapId}`);
