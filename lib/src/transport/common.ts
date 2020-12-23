@@ -1,5 +1,4 @@
 import FormData from 'form-data';
-import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import { StringDecoder } from 'string_decoder';
@@ -122,7 +121,7 @@ export async function get(baseUrl: string, authToken: string, endpoint: string) 
 
 export interface IPutEntry {
     name: string;
-    value: string | fs.ReadStream;
+    value: string | any; // fs.ReadStream;
 }
 
 export async function putForm(
