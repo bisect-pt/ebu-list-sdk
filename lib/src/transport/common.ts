@@ -5,6 +5,8 @@ import { StringDecoder } from 'string_decoder';
 
 //////////////////////////////////////////////////////////////////////////////
 
+export type TokenGetter = () => string;
+
 export interface ITransportError extends Error {
     readonly code: number;
 }

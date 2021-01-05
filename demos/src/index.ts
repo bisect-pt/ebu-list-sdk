@@ -46,8 +46,12 @@ if (command === undefined) {
     () => void
 */
 const run = async () => {
-    const d = await import(`./demos/${command}`);
-    d.run(parser.argv);
+    try {
+        const d = await import(`./demos/${command}`);
+        await d.run(parser.argv);
+    } catch (e) {
+        console.log(`Error: ${JSON.stringify(e)}`);
+    }
 };
 
 run().catch(e => {
