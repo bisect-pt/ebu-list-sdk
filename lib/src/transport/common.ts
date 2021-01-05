@@ -102,7 +102,7 @@ export async function post(baseUrl: string, authToken: string | null, endpoint: 
     });
 }
 
-export async function get(baseUrl: string, authToken: string, endpoint: string) {
+export async function get(baseUrl: string, authToken: string, endpoint: string): Promise<any> {
     const headers: http.OutgoingHttpHeaders = {
         Authorization: `Bearer ${authToken}`,
     };

@@ -49,10 +49,10 @@ export interface IGenericResponse<ContentType> {
 
 export interface IApiHandler {
     login: (data: ILoginData) => Promise<IGenericResponse<ILoginResponse>>;
-    revalidateToken: () => Promise<IGenericResponse<ILoginResponse>>;
+    revalidateToken: (token: string) => Promise<IGenericResponse<ILoginResponse>>;
 }
 
-export class Client {
+export class AuthClient {
     private readonly tokenLocalStorageKey = 'bearer-token';
     private revalidateTimer: NodeJS.Timeout | null;
 
@@ -63,13 +63,13 @@ export class Client {
         this.revalidateTimer = null;
     }
 
+    public close() {
+        this.clearTimer();
+    }
+
     public async login(username: string, password: string): Promise<void | Error> {
         try {
-            console.log('login');
             const response = await this.apiHandler.login({ username, password });
-
-            console.log('login response');
-            console.dir(response);
 
             if (response && response.result <= 0 && response.content.success) {
                 this.setToken(response.content.token);
@@ -77,7 +77,6 @@ export class Client {
 
             return;
         } catch (err) {
-            console.error(`Login error ${err}`);
             this.invalidateToken();
             return err;
         }
@@ -131,25 +130,28 @@ export class Client {
         this.storageHandler.removeItem(this.tokenLocalStorageKey);
     }
 
-    private resetTimer(deltaMs: number): void {
+    private clearTimer(): void {
         if (this.revalidateTimer !== null) {
             clearTimeout(this.revalidateTimer);
             this.revalidateTimer = null;
         }
+    }
 
-        setTimeout(() => this.handleRevalidateTimer(), deltaMs);
+    private resetTimer(deltaMs: number): void {
+        this.clearTimer();
+        this.revalidateTimer = setTimeout(() => this.handleRevalidateTimer(), deltaMs);
     }
 
     private async handleRevalidateTimer() {
         try {
-            const response = await this.apiHandler.revalidateToken();
+            const response = await this.apiHandler.revalidateToken(this.getToken());
             if (response && response.result <= 0 && response.content.success) {
                 this.setToken(response.content.token);
             }
 
             return;
         } catch (err) {
-            console.error(`Token revalidation error ${err}`);
+            console.error(`Token revalidation error ${JSON.stringify(err)}`);
         }
 
         this.invalidateToken();

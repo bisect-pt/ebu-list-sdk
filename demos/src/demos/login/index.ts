@@ -7,10 +7,9 @@ export const run = async (args: IArgs) => {
         console.log('Connected');
         const version = await list.info.getVersion();
         console.log(JSON.stringify(version));
-        await list.close();
     } catch (e) {
         console.log(`Error: ${JSON.stringify(e)}`);
     } finally {
-        list.close();
+        await list.close();
     }
 };
