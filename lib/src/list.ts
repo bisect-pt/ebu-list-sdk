@@ -17,35 +17,28 @@ const makeApiHandler = (baseUrl: string): IApiHandler => ({
     revalidateToken: async (token: string) => get(baseUrl, token, '/api/user/revalidate-token'),
 });
 
-let token: string | undefined = undefined;
+class TokenStorage implements ILocalStorageHandler {
+    public token: any | undefined = undefined;
 
-const storageHandler: ILocalStorageHandler = (() => {
-    if (typeof process === 'object') {
-        return {
-            setItem: (key: string, value: any) => {
-                token = value;
-            },
-            getItem: (key: string) => {
-                return token;
-            },
-            removeItem: (key: string) => token = undefined,
-        };
-    } else {
-        return {
-            setItem: (key: string, value: any) => {},
-            getItem: (key: string) => {
-                return '';
-            },
-            removeItem: (key: string) => {},
-        };
+    public setItem(key: string, value: any) {
+        this.token = value;
     }
-})();
+    public getItem(key: string) {
+        return undefined; // this.token;
+    }
+    public removeItem(key: string) {
+        this.token = undefined;
+    }
+}
 
 export class LIST {
     // returns a new LIST object
     public static async connectWithOptions(options: types.IListOptions): Promise<LIST> {
         const apiHandler = makeApiHandler(options.baseUrl);
-        const authClient = new AuthClient(apiHandler, storageHandler);
+
+        const storage = new TokenStorage();
+
+        const authClient = new AuthClient(apiHandler, storage);
         const loginError = await authClient.login(options.username, options.password);
         if (loginError) {
             authClient.close();
@@ -53,11 +46,17 @@ export class LIST {
         }
 
         const rest = new RestClient(options.baseUrl, authClient.getToken.bind(authClient));
-        const user: apiTypes.user.IUserInfo = (await rest.get('/api/user')) as apiTypes.user.IUserInfo;
-        const ws = new WSCLient(options.baseUrl, '/socket', user.id);
-        const transport = new Transport(rest, ws);
 
-        return new LIST(transport, authClient);
+        try {
+            const user: apiTypes.user.IUserInfo = (await rest.get('/api/user')) as apiTypes.user.IUserInfo;
+            const ws = new WSCLient(options.baseUrl, '/socket', user.id);
+            const transport = new Transport(rest, ws);
+
+            return new LIST(transport, authClient);
+        } catch (e) {
+            authClient.close();
+            return e;
+        }
     }
 
     public static async connect(baseUrl: string, username: string, password: string): Promise<LIST> {
@@ -67,7 +66,6 @@ export class LIST {
     private constructor(public readonly transport: Transport, private readonly authClient: AuthClient) {}
 
     public async close(): Promise<void> {
-        await this.transport.post('/auth/logout', {});
         this.transport.close();
         this.authClient.close();
     }
@@ -82,5 +80,9 @@ export class LIST {
 
     public get pcap() {
         return new Pcap(this.transport);
+    }
+
+    public async logout(): Promise<void> {
+        return this.transport.post('/auth/logout', {});
     }
 }
