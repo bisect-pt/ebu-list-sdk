@@ -24,7 +24,7 @@ class TokenStorage implements ILocalStorageHandler {
         this.token = value;
     }
     public getItem(key: string) {
-        return undefined; // this.token;
+        return this.token;
     }
     public removeItem(key: string) {
         this.token = undefined;
@@ -53,9 +53,8 @@ export class LIST {
             const transport = new Transport(rest, ws);
 
             return new LIST(transport, authClient);
-        } catch (e) {
+        } finally {
             authClient.close();
-            return e;
         }
     }
 
