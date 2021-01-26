@@ -33,42 +33,44 @@ class TokenStorage implements ILocalStorageHandler {
 }
 
 export class LIST {
-    // returns a new LIST object
-    public static async connectWithOptions(options: types.IListOptions): Promise<LIST> {
+    private readonly transport: Transport;
+    private readonly authClient: AuthClient;
+    private readonly rest: RestClient;
+    private ws: WSCLient | null = null;
+
+    public constructor(private readonly baseUrl: string) {
         const unwinder = new Unwinder();
 
         try {
-            const apiHandler = makeApiHandler(options.baseUrl);
+            const apiHandler = makeApiHandler(baseUrl);
             const storage = new TokenStorage();
-            const authClient = new AuthClient(apiHandler, storage);
-            unwinder.add(() => authClient.close());
+            this.authClient = new AuthClient(apiHandler, storage);
+            unwinder.add(() => this.authClient.close());
 
-            const rest = new RestClient(options.baseUrl, authClient.getToken.bind(authClient));
-
-            const loginError = await authClient.login(options.username, options.password);
-            if (loginError) {
-                throw loginError;
-            }
-
-            const user: apiTypes.user.IUserInfo = (await rest.get('/api/user')) as apiTypes.user.IUserInfo;
-            const ws = new WSCLient(options.baseUrl, '/socket', user.id);
-            const transport = new Transport(rest, ws);
+            this.rest = new RestClient(baseUrl, this.authClient.getToken.bind(this.authClient));
+            this.transport = new Transport(this.rest);
 
             unwinder.reset();
-            return new LIST(transport, authClient);
         } finally {
             unwinder.unwind();
         }
     }
 
-    public static async connect(baseUrl: string, username: string, password: string): Promise<LIST> {
-        return LIST.connectWithOptions({ baseUrl, username, password });
+    public async login(username: string, password: string): Promise<void> {
+        const loginError = await this.authClient.login(username, password);
+        if (loginError) {
+            throw loginError;
+        }
+
+        const user: apiTypes.user.IUserInfo = (await this.rest.get('/api/user')) as apiTypes.user.IUserInfo;
+        this.ws = new WSCLient(this.baseUrl, '/socket', user.id);
     }
 
-    private constructor(public readonly transport: Transport, private readonly authClient: AuthClient) {}
-
     public async close(): Promise<void> {
-        this.transport.close();
+        if (this.ws) {
+            this.ws.close();
+        }
+        
         this.authClient.close();
     }
 
