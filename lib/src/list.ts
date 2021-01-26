@@ -8,6 +8,7 @@ import { get, post } from './transport/common';
 import { RestClient } from './transport/restClient';
 import { WSCLient } from './transport/wsClient';
 import * as types from './types';
+import { Unwinder } from '@bisect/bisect-core-ts';
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -34,27 +35,29 @@ class TokenStorage implements ILocalStorageHandler {
 export class LIST {
     // returns a new LIST object
     public static async connectWithOptions(options: types.IListOptions): Promise<LIST> {
-        const apiHandler = makeApiHandler(options.baseUrl);
-
-        const storage = new TokenStorage();
-
-        const authClient = new AuthClient(apiHandler, storage);
-        const loginError = await authClient.login(options.username, options.password);
-        if (loginError) {
-            authClient.close();
-            throw loginError;
-        }
-
-        const rest = new RestClient(options.baseUrl, authClient.getToken.bind(authClient));
+        const unwinder = new Unwinder();
 
         try {
+            const apiHandler = makeApiHandler(options.baseUrl);
+            const storage = new TokenStorage();
+            const authClient = new AuthClient(apiHandler, storage);
+            unwinder.add(() => authClient.close());
+
+            const rest = new RestClient(options.baseUrl, authClient.getToken.bind(authClient));
+
+            const loginError = await authClient.login(options.username, options.password);
+            if (loginError) {
+                throw loginError;
+            }
+
             const user: apiTypes.user.IUserInfo = (await rest.get('/api/user')) as apiTypes.user.IUserInfo;
             const ws = new WSCLient(options.baseUrl, '/socket', user.id);
             const transport = new Transport(rest, ws);
 
+            unwinder.reset();
             return new LIST(transport, authClient);
         } finally {
-            authClient.close();
+            unwinder.unwind();
         }
     }
 
