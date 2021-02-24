@@ -4,6 +4,7 @@ import { AuthClient, ILoginData, IApiHandler, IGenericResponse, ILoginResponse }
 import { Info } from './info';
 import { Live } from './live';
 import Pcap from './pcap';
+import Stream from './stream';
 import { Transport } from './transport';
 import { get, post } from './transport/common';
 import { RestClient } from './transport/restClient';
@@ -79,6 +80,10 @@ export default class LIST {
 
     public get pcap(): Pcap {
         return new Pcap(this.transport);
+    }
+
+    public get stream(): Stream {
+        return new Stream(this.transport);
     }
 
     public async logout(): Promise<void> {

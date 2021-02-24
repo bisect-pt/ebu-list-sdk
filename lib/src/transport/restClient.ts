@@ -1,4 +1,5 @@
 import { get, IPutEntry, post, putForm, del, TokenGetter } from './common';
+import { createUrl } from '../utils/platform';
 
 export class RestClient {
     public constructor(private readonly baseUrl: string, private readonly tokenGetter: TokenGetter) {}
@@ -21,5 +22,16 @@ export class RestClient {
 
     public async del(endpoint: string) {
         return del(this.baseUrl, this.tokenGetter(), endpoint);
+    }
+
+    public getAuthUrl(path: string) {
+        // const url = createUrl(path);
+
+        // const token = this.tokenGetter();
+        // url.searchParams.append('token', `Bearer ${token}`);
+
+        // return url;
+        const token = this.tokenGetter();
+        return `${path}?token=Bearer ${token}`;
     }
 }
