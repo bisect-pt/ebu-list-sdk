@@ -1,5 +1,7 @@
 import { Transport } from './transport';
 
+import { IFrameInfo } from './api/stream';
+
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Stream {
@@ -7,9 +9,9 @@ export default class Stream {
         this.transport = transport;
     }
 
-    public async getFramesFromStream(pcapID: string, streamID: string | undefined): Promise<any> {
+    public async getFramesFromStream(pcapID: string, streamID: string | undefined): Promise<IFrameInfo[]> {
         const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/frames`);
-        const frames: any = response;
+        const frames: IFrameInfo[] = response as IFrameInfo[];
         return frames;
     }
 
