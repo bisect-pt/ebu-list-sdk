@@ -34,4 +34,21 @@ export default class Stream {
             `/api/pcap/${pcapID}/stream/${streamID}/downloadmp3${channelsString ? `?channels=${channelsString}` : ''}`
         );
     }
+
+    //Ancillary
+    public downloadAncillaryUrl(pcapID: string, streamID: string | undefined, filename: string) {
+        return this.transport.rest.getAuthUrl(`/api/pcap/${pcapID}/stream/${streamID}/ancillary/${filename}`);
+    }
+
+    public async getAvailableAncillaryOptions(): Promise<any> {
+        const response = await this.transport.get('/api/sdp/available-options?media_type=ancillary');
+        const availableAncOptions: any = response;
+        return availableAncOptions;
+    }
+
+    public async downloadText(path: string): Promise<any> {
+        const response = await this.transport.get(`${path}`);
+        const text: any = response;
+        return text;
+    }
 }
