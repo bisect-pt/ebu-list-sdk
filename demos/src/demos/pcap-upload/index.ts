@@ -1,6 +1,7 @@
 import { LIST } from '@bisect/ebu-list-sdk';
-import { IArgs } from '../../types';
+import { IArgs, IEventInfo } from '../../types';
 import fs from 'fs';
+import websocketEventsEnum from '../websocketEventsEnum';
 
 const doUpload = async (list: LIST, stream: fs.ReadStream): Promise<string> =>
     new Promise(async (resolve, reject) => {
@@ -11,9 +12,9 @@ const doUpload = async (list: LIST, stream: fs.ReadStream): Promise<string> =>
         }
 
         let pcapId: string | undefined = undefined;
-        let messages: any[] = [];
+        let messages: IEventInfo[] = [];
 
-        const handleMessage = (msg: any) => {
+        const handleMessage = (msg: IEventInfo) => {
             messages.push(msg);
             if (pcapId !== undefined) {
                 const x = pcapId;
@@ -24,9 +25,9 @@ const doUpload = async (list: LIST, stream: fs.ReadStream): Promise<string> =>
 
         wsClient.on('message', handleMessage);
 
-        const processMessage = (actualPcapId: string, msg: any) => {
+        const processMessage = (actualPcapId: string, msg: IEventInfo) => {
             console.log(JSON.stringify(msg));
-            if (msg.event === 'PCAP_FILE_PROCESSING_DONE') {
+            if (msg.event === websocketEventsEnum.PCAP.FILE_PROCESSING_DONE) {
                 wsClient.off('message', handleMessage);
                 resolve(actualPcapId);
             }
