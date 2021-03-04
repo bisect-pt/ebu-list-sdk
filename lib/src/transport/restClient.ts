@@ -1,4 +1,4 @@
-import { get, IPutEntry, post, putForm, del, TokenGetter } from './common';
+import { get, getText, IPutEntry, post, putForm, del, TokenGetter } from './common';
 import { createUrl } from '../utils/platform';
 
 export class RestClient {
@@ -6,6 +6,10 @@ export class RestClient {
 
     public async get(endpoint: string) {
         return get(this.baseUrl, this.tokenGetter(), endpoint);
+    }
+
+    public async getText(endpoint: string) {
+        return getText(this.baseUrl, this.tokenGetter(), endpoint);
     }
 
     public async post(endpoint: string, data: object) {
