@@ -21,7 +21,7 @@ export default class Stream {
     }
 
     //Audio
-    public async renderMp3(pcapID: string, streamID: string | undefined, channelsString: string) {
+    public async renderMp3(pcapID: string, streamID: string | undefined, channelsString: string): Promise<any> {
         const response = await this.transport.get(
             `/api/pcap/${pcapID}/stream/${streamID}/rendermp3?channels=${channelsString}`
         );

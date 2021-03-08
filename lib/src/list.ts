@@ -52,9 +52,10 @@ export default class LIST {
         if (loginError) {
             throw loginError;
         }
-
+        console.log('***********+LIST1');
         const user: apiTypes.user.IUserInfo = (await this.rest.get('/api/user')) as apiTypes.user.IUserInfo;
         this.ws = new WSCLient(this.baseUrl, '/socket', user.id);
+        console.log('***********+LIST2');
     }
 
     public async close(): Promise<void> {
@@ -64,6 +65,7 @@ export default class LIST {
         }
 
         this.authClient.close();
+        console.log('************websocket closed');
     }
 
     public get wsClient(): SocketIOClient.Socket | undefined {
