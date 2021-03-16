@@ -160,4 +160,18 @@ export default class Stream {
         const text: any = response;
         return text;
     }
+
+    //Ancilary Graphs - Packets Per Frame Line Chart
+    public async getPacketsPerFrame(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/packetsPerFrame?from=${fromNs}&to=${toNs}`
+        );
+        const data: any = response;
+        return data;
+    }
 }
