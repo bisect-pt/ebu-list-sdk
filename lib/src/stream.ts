@@ -121,6 +121,35 @@ export default class Stream {
         );
     }
 
+    //Audio Graphs - Delta Packect VS RTP Line Chart
+    public async getAudioPktTsVsRtpTs(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTs?from=${fromNs}&to=${toNs}`
+        );
+        const data: any = response;
+        return data;
+    }
+    //Audio Graphs - TS-DF Line Chart
+    public async getAudioTimeStampedDelayFactor(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined,
+        toleranceUs: string | undefined,
+        tsdfmaxUs: string | undefined
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioTimeStampedDelayFactor?from=${fromNs}&to=${toNs}&tolerance=${toleranceUs}&tsdfmax=${tsdfmaxUs}`
+        );
+        const data: any = response;
+        return data;
+    }
+
     //Ancillary
     public downloadAncillaryUrl(pcapID: string, streamID: string | undefined, filename: string) {
         return this.transport.rest.getAuthUrl(`/api/pcap/${pcapID}/stream/${streamID}/ancillary/${filename}`);
