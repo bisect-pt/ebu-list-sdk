@@ -34,6 +34,13 @@ export default class Stream {
         return cinstData;
     }
 
+    //Video Graphs - Cinst Bar Chart
+    public async getCInstHistogramForStream(pcapID: string, streamID: string | undefined): Promise<any> {
+        const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/analytics/CInst/histogram`);
+        const cinstData: any = response;
+        return cinstData;
+    }
+
     //Video Graphs - Vrx Line Chart
     public async getVrxIdealForStream(
         pcapID: string,
