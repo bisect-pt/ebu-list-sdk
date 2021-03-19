@@ -78,7 +78,7 @@ export default class Stream {
         return ftpData;
     }
 
-    //Video Graphs - RTP Latency Line Chart
+    //Video&Ancillary Graphs - RTP Latency Line Chart
     public async getDeltaPacketTimeVsRtpTimeRaw(
         pcapID: string,
         streamID: string | undefined,
@@ -106,7 +106,7 @@ export default class Stream {
         return rtpOffsetData;
     }
 
-    //Video Graphs - RTP Time Step Line Chart
+    //Video&Ancillary Graphs - RTP Time Step Line Chart
     public async getDeltaToPreviousRtpTsRaw(
         pcapID: string,
         streamID: string | undefined,
@@ -184,6 +184,15 @@ export default class Stream {
     ): Promise<any> {
         const response = await this.transport.get(
             `/api/pcap/${pcapID}/stream/${streamID}/analytics/packetsPerFrame?from=${fromNs}&to=${toNs}`
+        );
+        const data: any = response;
+        return data;
+    }
+
+    //Ancilary Graphs - Packets Per Frame Histogram Chart
+    public async getAncillaryPktPerFrameHistogram(pcapID: string, streamID: string | undefined): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AncillaryPktHistogram`
         );
         const data: any = response;
         return data;
