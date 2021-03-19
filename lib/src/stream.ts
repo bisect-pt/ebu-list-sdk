@@ -57,6 +57,13 @@ export default class Stream {
         return vrxData;
     }
 
+    //Video Graphs - Vrx Bar Chart
+    public async getVrxHistogramForStream(pcapID: string, streamID: string | undefined): Promise<any> {
+        const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/analytics/Vrx/histogram`);
+        const vrxData: any = response;
+        return vrxData;
+    }
+
     //Video Graphs - FTP Line Chart
     public async getDeltaToIdealTpr0Raw(
         pcapID: string,
