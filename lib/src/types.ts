@@ -33,3 +33,9 @@ export interface ILiveSource {
     meta: ILiveMeta;
     sdp: ISdp;
 }
+
+export interface IUploadProgressInfo {
+    bytesRead: number;
+}
+
+export type UploadProgressCallback = (info: IUploadProgressInfo) => void;

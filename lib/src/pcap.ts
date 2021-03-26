@@ -1,13 +1,11 @@
 import { Transport } from './transport';
-import { IPcapUploadResult } from './types';
+import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo } from './api/pcap';
 
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Pcap {
-    public constructor(private readonly transport: Transport) {
-        this.transport = transport;
-    }
+    public constructor(private readonly transport: Transport) {}
 
     public async getAll(): Promise<IPcapInfo[]> {
         const response = await this.transport.get('/api/pcap');
@@ -31,11 +29,24 @@ export default class Pcap {
 
     // name: the name that will show up on LIST
     // stream: e.g. fs.createReadStream(path)
-    public async upload(name: string, stream: any): Promise<IPcapUploadResult> {
-        const result = await this.transport.putForm('/api/pcap', [
-            { name: 'pcap', value: stream },
-            { name: 'originalFilename', value: name },
-        ]);
-        return result as IPcapUploadResult;
+    public async upload(name: string, stream: any, callback?: UploadProgressCallback): Promise<IPcapUploadResult> {
+        const timer =
+            callback &&
+            setInterval(() => {
+                callback({ bytesRead: stream.bytesRead });
+            }, 300);
+
+        try {
+            const result = await this.transport.putForm('/api/pcap', [
+                { name: 'pcap', value: stream },
+                { name: 'originalFilename', value: name },
+            ]);
+
+            return result as IPcapUploadResult;
+        } finally {
+            if (timer) {
+                clearInterval(timer);
+            }
+        }
     }
 }
