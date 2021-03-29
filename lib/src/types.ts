@@ -35,7 +35,7 @@ export interface ILiveSource {
 }
 
 export interface IUploadProgressInfo {
-    bytesRead: number;
+    percentage: number;
 }
 
 export type UploadProgressCallback = (info: IUploadProgressInfo) => void;

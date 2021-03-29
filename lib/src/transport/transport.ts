@@ -1,4 +1,4 @@
-import { IPutEntry } from './common';
+import { IPutEntry, UploadProgressCallback } from './common';
 import { RestClient } from './restClient';
 
 export class Transport {
@@ -16,8 +16,8 @@ export class Transport {
         return this.rest.post(endpoint, data);
     }
 
-    public async putForm(endpoint: string, entries: IPutEntry[]): Promise<any> {
-        return this.rest.putForm(endpoint, entries);
+    public async putForm(endpoint: string, entries: IPutEntry[], callback: UploadProgressCallback): Promise<any> {
+        return this.rest.putForm(endpoint, entries, callback);
     }
 
     public async del(endpoint: string) {

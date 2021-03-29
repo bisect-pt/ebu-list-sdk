@@ -174,25 +174,37 @@ export interface IPutEntry {
     value: string | any; // fs.ReadStream;
 }
 
+export interface IUploadProgressInfo {
+    percentage: number;
+}
+
+export type UploadProgressCallback = (info: IUploadProgressInfo) => void;
+
 export async function putForm(
     baseUrl: string,
     authToken: string | null,
     endpoint: string,
-    entries: IPutEntry[]
+    entries: IPutEntry[],
+    callback: UploadProgressCallback
 ): Promise<any> {
     const form = new XFormData();
     entries.forEach(entry => form.append(entry.name, entry.value));
 
     const config = {
         headers: {
-            Autorization: `Bearer ${authToken}`,
+            Authorization: `Bearer ${authToken}`,
+        },
+        onUploadProgress: (progressEvent: any) => {
+            const percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+
+            const info = { percentage: percentCompleted };
+
+            callback(info);
         },
     };
 
-    console.log('aqui');
     try {
         const response = await axios.put(`${baseUrl}${endpoint}`, form, config);
-        console.log(JSON.stringify(response));
         return response;
     } catch (err) {
         console.error(err);

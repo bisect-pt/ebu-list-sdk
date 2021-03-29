@@ -1,4 +1,4 @@
-import { get, getText, IPutEntry, post, putForm, del, TokenGetter } from './common';
+import { get, getText, IPutEntry, post, putForm, del, TokenGetter, UploadProgressCallback } from './common';
 import { createUrl } from '../utils/platform';
 
 export class RestClient {
@@ -20,8 +20,8 @@ export class RestClient {
         return post(this.baseUrl, this.tokenGetter(), endpoint, data);
     }
 
-    public async putForm(endpoint: string, entries: IPutEntry[]): Promise<any> {
-        return await putForm(this.baseUrl, this.tokenGetter(), endpoint, entries);
+    public async putForm(endpoint: string, entries: IPutEntry[], callback: UploadProgressCallback): Promise<any> {
+        return await putForm(this.baseUrl, this.tokenGetter(), endpoint, entries, callback);
     }
 
     public async del(endpoint: string) {
