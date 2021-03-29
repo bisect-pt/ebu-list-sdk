@@ -30,23 +30,11 @@ export default class Pcap {
     // name: the name that will show up on LIST
     // stream: e.g. fs.createReadStream(path)
     public async upload(name: string, stream: any, callback?: UploadProgressCallback): Promise<IPcapUploadResult> {
-        const timer =
-            callback &&
-            setInterval(() => {
-                callback({ bytesRead: stream.bytesRead });
-            }, 300);
+        const result = await this.transport.putForm('/api/pcap', [
+            { name: 'pcap', value: stream },
+            { name: 'originalFilename', value: name },
+        ]);
 
-        try {
-            const result = await this.transport.putForm('/api/pcap', [
-                { name: 'pcap', value: stream },
-                { name: 'originalFilename', value: name },
-            ]);
-
-            return result as IPcapUploadResult;
-        } finally {
-            if (timer) {
-                clearInterval(timer);
-            }
-        }
+        return result as IPcapUploadResult;
     }
 }

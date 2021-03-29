@@ -4,7 +4,7 @@ import https from 'https';
 import { StringDecoder } from 'string_decoder';
 import logger from '../utils/logger';
 import { createUrl } from '../utils/platform';
-
+import axios from 'axios';
 // ////////////////////////////////////////////////////////////////////////////
 
 export type TokenGetter = () => string;
@@ -180,34 +180,52 @@ export async function putForm(
     endpoint: string,
     entries: IPutEntry[]
 ): Promise<any> {
-    return new Promise((resolve, reject): void => {
-        const form = new FormData();
+    const form = new FormData();
+    entries.forEach(entry => form.append(entry.name, entry.value));
 
-        entries.forEach(entry => form.append(entry.name, entry.value));
+    const config = {
+        headers: {
+            Autorization: `Bearer ${authToken}`,
+        },
+    };
 
-        const headers: http.OutgoingHttpHeaders = {
-            ...form.getHeaders(),
-        };
+    console.log('aqui');
+    try {
+        const response = await axios.put(`${baseUrl}${endpoint}`, form, config);
+        console.log(JSON.stringify(response));
+        return response;
+    } catch (err) {
+        console.error(err);
+    }
 
-        if (authToken !== null) {
-            headers.Authorization = `Bearer ${authToken}`;
-        }
+    // return new Promise((resolve, reject): void => {
+    //     const form = new FormData();
 
-        const options: IRequestOptionsExt = {
-            headers,
-            method: 'PUT',
-            rejectUnauthorized: false,
-        };
+    //     entries.forEach(entry => form.append(entry.name, entry.value));
 
-        const callback = (res: http.IncomingMessage): void => handleHttpJSONResponse(res, resolve, reject);
-        const req: http.ClientRequest = makeRequest(`${baseUrl}${endpoint}`, options, callback);
-        form.pipe(req);
-        req.on('error', err => {
-            logger.error(`req.on('error') ${JSON.stringify(err)}`);
-            reject(err);
-        });
-        req.on('response', res => handleHttpJSONResponse(res, resolve, reject));
-    });
+    //     const headers: http.OutgoingHttpHeaders = {
+    //         ...form.getHeaders(),
+    //     };
+
+    //     if (authToken !== null) {
+    //         headers.Authorization = `Bearer ${authToken}`;
+    //     }
+
+    //     const options: IRequestOptionsExt = {
+    //         headers,
+    //         method: 'PUT',
+    //         rejectUnauthorized: false,
+    //     };
+
+    //     const callback = (res: http.IncomingMessage): void => handleHttpJSONResponse(res, resolve, reject);
+    //     const req: http.ClientRequest = makeRequest(`${baseUrl}${endpoint}`, options, callback);
+    //     form.pipe(req);
+    //     req.on('error', err => {
+    //         logger.error(`req.on('error') ${JSON.stringify(err)}`);
+    //         reject(err);
+    //     });
+    //     req.on('response', res => handleHttpJSONResponse(res, resolve, reject));
+    // });
 }
 
 export async function del(baseUrl: string, authToken: string, endpoint: string): Promise<void> {
