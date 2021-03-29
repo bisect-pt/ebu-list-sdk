@@ -1,4 +1,4 @@
-import FormData from 'form-data';
+import XFormData from 'form-data';
 import http from 'http';
 import https from 'https';
 import { StringDecoder } from 'string_decoder';
@@ -180,7 +180,7 @@ export async function putForm(
     endpoint: string,
     entries: IPutEntry[]
 ): Promise<any> {
-    const form = new FormData();
+    const form = new XFormData();
     entries.forEach(entry => form.append(entry.name, entry.value));
 
     const config = {
