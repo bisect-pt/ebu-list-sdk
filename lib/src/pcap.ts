@@ -1,4 +1,4 @@
-import { Transport } from './transport';
+import { Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo } from './api/pcap';
 

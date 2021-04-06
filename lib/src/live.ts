@@ -1,5 +1,5 @@
 import { Workflow } from './api/constants';
-import { Transport } from './transport';
+import { Transport } from '@bisect/bisect-core-ts';
 import { ILiveSource } from './types';
 
 //////////////////////////////////////////////////////////////////////////////
