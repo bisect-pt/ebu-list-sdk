@@ -1,7 +1,7 @@
 import { Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo } from './api/pcap';
-
+import axios from 'axios';
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Pcap {
@@ -40,5 +40,11 @@ export default class Pcap {
         );
 
         return result as IPcapUploadResult;
+    }
+
+    public async downloadPcap(pcapId: string): Promise<any> {
+        console.log('PCAP API');
+        const result = await this.transport.downloadPcap(`/api/pcap/${pcapId}/download`);
+        return result;
     }
 }
