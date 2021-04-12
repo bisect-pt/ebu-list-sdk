@@ -43,8 +43,7 @@ export default class Pcap {
     }
 
     public async downloadPcap(pcapId: string): Promise<any> {
-        console.log('PCAP API');
-        const result = await this.transport.downloadPcap(`/api/pcap/${pcapId}/download`);
+        const result = await this.transport.download(`/api/pcap/${pcapId}/download`);
         return result;
     }
 }
