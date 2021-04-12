@@ -58,7 +58,7 @@ export const run = async (args: IArgs) => {
 
     const stream = fs.createReadStream(pcapFile);
 
-    const callback = (info: types.IUploadProgressInfo) => console.log(`bytesRead: ${info.bytesRead}`);
+    const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
     const pcapId = await doUpload(list, stream, callback);
 
