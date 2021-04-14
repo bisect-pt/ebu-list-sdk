@@ -1,7 +1,7 @@
 import { Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo } from './api/pcap';
-import axios from 'axios';
+
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Pcap {
