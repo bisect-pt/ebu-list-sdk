@@ -35,7 +35,7 @@ const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.Uploa
 
         const uploadResult = await list.pcap.upload('A pcap file', stream, callback);
 
-        console.log(`Upload returned: ${uploadResult}`);
+        console.log(`Upload returned: ${JSON.stringify(uploadResult)}`);
 
         pcapId = uploadResult.uuid;
 
