@@ -57,16 +57,6 @@ export default class Pcap {
         return result;
     }
 
-    public async getDownloads(): Promise<any> {
-        const result = await this.transport.get(`/api/downloadmngr`);
-        return result;
-    }
-
-    public async downloadFile(id: string): Promise<any> {
-        const result = await this.transport.download(`/api//downloadmngr/download/${id}`);
-        return result;
-    }
-
     public async createWorkflow(info: any): Promise<any> {
         console.log('pcap api', info);
         const result = await this.transport.post(`/api/workflow/`, info);
