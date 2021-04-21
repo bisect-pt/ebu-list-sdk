@@ -1,8 +1,9 @@
 import { Transport } from '@bisect/bisect-core-ts';
+import { IUserInfo } from './api/user';
 
-//////////////////////////////////////////////////////////////////////////////
+/// ///////////////////////////////////////////////////////////////////////////
 
-export class User {
+export default class User {
     public constructor(private readonly transport: Transport) {
         this.transport = transport;
     }
@@ -14,5 +15,9 @@ export class User {
         };
 
         return await this.transport.post('/user/register', data);
+    }
+
+    public async getUser(): Promise<IUserInfo> {
+        return await this.transport.get(`/api/user`);
     }
 }
