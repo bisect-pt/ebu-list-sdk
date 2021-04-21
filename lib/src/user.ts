@@ -20,4 +20,12 @@ export default class User {
     public async getUser(): Promise<IUserInfo> {
         return await this.transport.get(`/api/user`);
     }
+
+    public async deleteUser(data: any): Promise<any> {
+        return await this.transport.post(`/api/user/delete`, data);
+    }
+
+    public async updateUserPreferences(value: any): Promise<any> {
+        return await this.transport.patch(`/api/user/preferences`, { value });
+    }
 }
