@@ -109,4 +109,8 @@ export default class LIST {
     public getToken(): string {
         return this.authClient.getToken();
     }
+
+    public setToken(token: string): void {
+        return this.authClient.setToken(token);
+    }
 }
