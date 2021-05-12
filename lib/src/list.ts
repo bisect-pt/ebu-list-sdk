@@ -9,7 +9,7 @@ import Stream from './stream';
 import DownloadManager from './downloadManager';
 import Workflows from './workflows';
 import TokenStorage from './tokenStorage';
-import { IListOptions, ILocalStorageHandler } from './types';
+import { IListOptions } from './types';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -73,6 +73,10 @@ export default class LIST {
 
     public get wsClient(): SocketIOClient.Socket | undefined {
         return this.ws?.client;
+    }
+
+    public reconnectWsClient(userId: string): void {
+        this.ws = new WSCLient(this.baseUrl, '/socket', userId);
     }
 
     public get info() {
