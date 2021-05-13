@@ -167,3 +167,11 @@ export interface IStreamAnalysis {
     result: 'compliant' | 'not_compliant';
     details?: any;
 }
+
+export interface IPcapFileReceived {
+    id: string;
+    file_name: string;
+    pcap_file_name: string;
+    data: number;
+    progress: number;
+}

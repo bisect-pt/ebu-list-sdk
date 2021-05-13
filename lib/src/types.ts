@@ -4,6 +4,8 @@ export type IPcapInfo = api.pcap.IPcapInfo;
 export type IStreamInfo = api.pcap.IStreamInfo;
 export type IFrameInfo = api.stream.IFrameInfo;
 
+export type IPcapFileReceived = api.pcap.IPcapFileReceived;
+
 export interface IVersion {
     major: number;
     minor: number;
