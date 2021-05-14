@@ -175,3 +175,17 @@ export interface IPcapFileReceived {
     data: number;
     progress: number;
 }
+
+export interface IAnalysisProfileDetails {
+    id: string;
+    label: string;
+    timestamps: {
+        source: string;
+    };
+}
+
+export interface IAnalysisProfile {
+    all: IAnalysisProfileDetails[];
+
+    default: string;
+}

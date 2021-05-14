@@ -1,9 +1,9 @@
 import { Unwinder, Transport, RestClient, get, post, WSCLient } from '@bisect/bisect-core-ts';
 import * as apiTypes from './api';
 import { AuthClient, ILoginData, IApiHandler, IGenericResponse, ILoginResponse } from './auth';
-import { Info } from './info';
+import Info from './info';
 import User from './user';
-import { Live } from './live';
+import Live from './live';
 import Pcap from './pcap';
 import Stream from './stream';
 import DownloadManager from './downloadManager';
@@ -79,7 +79,7 @@ export default class LIST {
         this.ws = new WSCLient(this.baseUrl, '/socket', userId);
     }
 
-    public get info() {
+    public get info(): Info {
         return new Info(this.transport);
     }
 
@@ -87,7 +87,7 @@ export default class LIST {
         return new User(this.transport);
     }
 
-    public get live() {
+    public get live(): Live {
         return new Live(this.transport);
     }
 

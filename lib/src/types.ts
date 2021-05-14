@@ -6,6 +6,9 @@ export type IFrameInfo = api.stream.IFrameInfo;
 
 export type IPcapFileReceived = api.pcap.IPcapFileReceived;
 
+export type IAnalysisProfile = api.pcap.IAnalysisProfile;
+export type IAnalysisProfileDetails = api.pcap.IAnalysisProfileDetails;
+
 export interface IVersion {
     major: number;
     minor: number;
@@ -51,3 +54,7 @@ export interface ILocalStorageHandler {
 export interface IListOptions {
     tokenStorage?: ILocalStorageHandler;
 }
+
+// Download Manager
+export type IDownloadManagerDataContent = api.downloadManager.IDownloadManagerDataContent;
+export type IDownloadManagerData = api.downloadManager.IDownloadManagerData;
