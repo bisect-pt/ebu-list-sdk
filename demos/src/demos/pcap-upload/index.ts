@@ -12,38 +12,27 @@ const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.Uploa
         }
 
         let pcapId: string | undefined = undefined;
-        let messages: IEventInfo[] = [];
+        const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
 
-        const handleMessage = (msg: IEventInfo) => {
-            messages.push(msg);
-            if (pcapId !== undefined) {
-                const x = pcapId;
-                messages.forEach(msg => processMessage(x, msg));
-                messages = [];
-            }
-        };
+        const upload = await list.pcap.upload('A pcap file', stream, callback);
+        const uploadAwaiter = list.pcap.makeUploadAwaiter(upload.uuid, timeoutMs);
+        const uploadResult = await uploadAwaiter;
 
-        wsClient.on('message', handleMessage);
-
-        const processMessage = (actualPcapId: string, msg: IEventInfo) => {
-            console.log(JSON.stringify(msg));
-            if (msg.event === websocketEventsEnum.PCAP.FILE_PROCESSING_DONE) {
-                wsClient.off('message', handleMessage);
-                resolve(actualPcapId);
-            }
-        };
-
-        const uploadResult = await list.pcap.upload('A pcap file', stream, callback);
-
-        console.log(`Upload returned: ${JSON.stringify(uploadResult)}`);
-
-        pcapId = uploadResult.uuid;
-
-        if (pcapId !== undefined) {
-            const x = pcapId;
-            messages.forEach(msg => processMessage(x, msg));
-            messages = [];
+        if (!uploadResult) {
+            reject(new Error('Pcap processing undefined'));
+            return;
         }
+
+        console.log(`Awaiter: ${JSON.stringify(uploadResult)}`);
+
+        pcapId = uploadResult.id;
+
+        if (!pcapId) {
+            reject(new Error('Pcap id undefined'));
+            return;
+        }
+
+        resolve(pcapId);
     });
 
 export const run = async (args: IArgs) => {
