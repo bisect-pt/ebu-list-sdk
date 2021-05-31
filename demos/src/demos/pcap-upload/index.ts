@@ -1,7 +1,7 @@
 import { LIST, types } from '@bisect/ebu-list-sdk';
-import { IArgs, IEventInfo } from '../../types';
 import fs from 'fs';
-import websocketEventsEnum from '../websocketEventsEnum';
+import { v1 as uuid } from 'uuid';
+import { IArgs } from '../../types';
 
 const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.UploadProgressCallback): Promise<string> =>
     new Promise(async (resolve, reject) => {
@@ -11,10 +11,10 @@ const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.Uploa
             return;
         }
 
-        let pcapId: string | undefined = undefined;
+        let pcapId: string | undefined = uuid();
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
 
-        const upload = await list.pcap.upload('A pcap file', stream, callback);
+        const upload = await list.pcap.upload('A pcap file', stream, callback, pcapId);
         const uploadAwaiter = list.pcap.makeUploadAwaiter(upload.uuid, timeoutMs);
         const uploadResult = await uploadAwaiter;
 
@@ -22,6 +22,7 @@ const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.Uploa
             reject(new Error('Pcap processing undefined'));
             return;
         }
+        console.log(`User Pcap Id: ${pcapId}`);
 
         console.log(`Awaiter: ${JSON.stringify(uploadResult)}`);
 

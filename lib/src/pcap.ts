@@ -55,10 +55,8 @@ export default class Pcap {
             { name: 'pcap', value: stream },
             { name: 'originalFilename', value: name },
         ];
-        if (pcapId) {
-            uploadEntry.push({ name: 'id', value: pcapId });
-        }
-        const result = await this.transport.putForm('/api/pcap', uploadEntry, callback);
+        const id = pcapId ? `/?pcapID=${pcapId}` : '';
+        const result = await this.transport.putForm(`/api/pcap${id}`, uploadEntry, callback);
         return result as IPcapUploadResult;
     }
 
