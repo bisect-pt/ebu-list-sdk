@@ -8,6 +8,7 @@ import Pcap from './pcap';
 import Stream from './stream';
 import DownloadManager from './downloadManager';
 import Workflows from './workflows';
+import News from './news';
 import TokenStorage from './tokenStorage';
 import { IListOptions } from './types';
 import StreamComparison from './streamComparison';
@@ -110,6 +111,10 @@ export default class LIST {
 
     public get streamComparison(): StreamComparison {
         return new StreamComparison(this.transport);
+    }
+
+    public get news(): News {
+        return new News(this.transport);
     }
 
     public async logout(): Promise<void> {
