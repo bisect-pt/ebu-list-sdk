@@ -1,5 +1,6 @@
 export interface IUserInfo {
-  id: string;
-  username: string;
-  preferences: any;
+    id: string;
+    username: string;
+    is_readonly: boolean;
+    preferences: any;
 }
