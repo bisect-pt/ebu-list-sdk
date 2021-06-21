@@ -69,9 +69,10 @@ export const run = async (args: IArgs) => {
 
     console.log('---------------------------------');
     console.log('Capture duration');
-    var captureDuration : number = CAPTURE_DURATION;
+    var captureDuration : number;
     if (typeof args.duration === 'undefined') {
-        captureDuration = parseInt(await readFromUser(`Enter duration (default ${captureDuration}sec): `));
+        const r = parseInt(await readFromUser(`Enter duration (default ${CAPTURE_DURATION}sec): `));
+        captureDuration = isNaN(r)?  CAPTURE_DURATION : r;
     } else {
         captureDuration = args.duration;
     }
