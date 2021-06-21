@@ -93,7 +93,7 @@ export const run = async (args: IArgs) => {
             pcap = await doCapture(list, filename, captureDuration, sources.map(e => e.id), callback);
         } catch (err) {
             console.error(`Error during capture or analysis: ${err.toString()}`);
-            break;
+            continue;
         }
 
         /* Handle result */
