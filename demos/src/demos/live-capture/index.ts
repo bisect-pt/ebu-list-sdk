@@ -100,29 +100,42 @@ export const run = async (args: IArgs) => {
         /* Handle result */
         if (freerun) { /* save up to ERROR_COUNT_LIMIT pcaps or autoremove */
             try {
+                const streams: any [] = await list.pcap.getStreams(pcap.id);
+                const ts_start: number = parseInt(streams[0].statistics.first_packet_ts) / 1000000000;
+                const ts_stop: number = parseInt(streams[0].statistics.last_packet_ts) / 1000000000;
+                console.error(` ts: ${ts_start.toFixed(1)} ..  ${ts_stop.toFixed(1)} sec`);
+
                 if ((pcap.error != '') ||
                         (pcap.summary.error_list.length > 0) ||
                         (pcap.total_streams != multicasts.length)) {
-                    errorCount += 1;
+
+                    /* Refine the error filter. Exple: enlarge RTP_vs_pkt range */
+                    /*
+                    const rtp_error_reducer = (acc: any, cur: any) => acc + (
+                        (cur.global_audio_analysis.packet_ts_vs_rtp_ts.range.min < -60) ||
+                        (cur.global_audio_analysis.packet_ts_vs_rtp_ts.range.max > 2500)
+                        )? 1 : 0;
+                    if (streams.reduce(rtp_error_reducer, 0) == 0) {
+                        console.log(`Skip`)
+                        await list.pcap.delete(pcap.id);
+                        continue;
+                    }
+                    */
+
                     console.log('Errors detected in Pcap:');
                     console.log(util.inspect(pcap, false, null, true));
                     console.log('Streams:');
-                    const streams: any [] = await list.pcap.getStreams(pcap.id);
                     console.log(util.inspect(streams, false, null, true));
+                    errorCount += 1;
                     if (errorCount > ERROR_COUNT_LIMIT) {
                         console.log('Maximum error count reached, exit.');
                         break;
                     }
                 } else {
-                    const streams: any [] = await list.pcap.getStreams(pcap.id);
-                    const ts_start: number = parseInt(streams[0].statistics.first_packet_ts) / 1000000000;
-                    const ts_stop: number = parseInt(streams[0].statistics.last_packet_ts) / 1000000000;
-                    console.error(` ts: ${ts_start.toFixed(1)} ..  ${ts_stop.toFixed(1)} sec`);
                     await list.pcap.delete(pcap.id);
                 }
             } catch (err) {
                 console.error(`Error get: ${err.toString()}`);
-                console.log(pcap)
             }
         } else { /* run once, show and exit */
             console.log('Pcap:');
