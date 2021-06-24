@@ -89,12 +89,12 @@ export const run = async (args: IArgs) => {
     var loopCount: number = 0;
     var errorCount: number = 0;
     while(true) { /* run once if no freerun */
-        const datetime = new Date();
+        const datetime = new Date().toLocaleString().split(" ").join("-").split("/").join("-");
         loopCount += 1;
-        console.log(`${datetime.toISOString()}--------------${errorCount}/${loopCount}`);
+        console.log(`${datetime}--------------${errorCount}/${loopCount}`);
 
         /* Start the capture */
-        const filename = `auto-${datetime.toISOString()}-${sources[0].meta.label}`;
+        const filename = `auto-${datetime}-${sources[0].meta.label}`;
         var pcap: PcapFileProcessingDone;
         console.log(`Capturing ${captureDuration} s`);
         try {
