@@ -12,6 +12,7 @@ export interface IPcapInfo {
     audio_streams: number; // Number of audio streams
     capture_date: number; // capture date, extracted from the pcap file
     date: number; // date of analysis
+    error: string; // pcap processing errors
     file_name: string; // TODO check this
     id: string; // unique id of the pcap
     narrow_linear_streams: number; // ST2110-21
@@ -24,6 +25,34 @@ export interface IPcapInfo {
     video_streams: number; // Number of video streams
     wide_streams: number; // ST2110-21
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
+}
+
+export interface PcapFileProcessingDone {
+    analyzed: boolean;
+    error: any;
+    offset_from_ptp_clock: number;
+    anc_streams: number;
+    audio_streams: number;
+    video_streams: number;
+    total_streams: number;
+    narrow_linear_streams: number;
+    narrow_streams: number;
+    not_compliant_streams: number;
+    wide_streams: number;
+    generated_from_network: boolean;
+    truncated: boolean;
+    _id: string;
+    id: string;
+    __v: number;
+    analyzer_version: string;
+    capture_date: number;
+    capture_file_name: string;
+    date: number;
+    file_name: string;
+    pcap_file_name: string;
+    analysis_profile: { id: string; label: string; timestamp: { source: string } };
+    summary: { error_list: IProblem[]; warning_list: IProblem[] };
+    progress: number;
 }
 
 export type Rate = '24000/1001' | '24' | '25' | '30000/1001' | '30' | '50' | '60000/1001' | '60';
@@ -41,7 +70,7 @@ export interface IST2110VideoInfo {
     max_tro_ns: number; // ST2110-21, nanoseconds
     min_tro_ns: number; // ST2110-21, nanoseconds
     packets_per_frame: number; // number of packets per frame
-    packing_mode: number; // TODO check this
+    packing_mode: number; // pixel group packing mode, e.g. Block or General
     rate: Rate; // Frame or field rate, as a fraction
     sampling: ColorSampling;
     scan_type: ScanType;
@@ -151,8 +180,8 @@ export interface IStreamInfo {
     media_type: MediaType;
     media_type_validation?: IMediaTypeValidation;
     network_information: INetworkInformation;
-    global_video_analysis: any;
-    global_audio_analysis: any;
+    global_video_analysis?: any;
+    global_audio_analysis?: any;
     pcap: string; // The id of the pcap on which this stream is contained
     state: StreamState;
     statistics: IStreamStatistics;
@@ -166,4 +195,26 @@ export interface IStreamAnalyses {
 export interface IStreamAnalysis {
     result: 'compliant' | 'not_compliant';
     details?: any;
+}
+
+export interface IPcapFileReceived {
+    id: string;
+    file_name: string;
+    pcap_file_name: string;
+    data: number;
+    progress: number;
+}
+
+export interface IAnalysisProfileDetails {
+    id: string;
+    label: string;
+    timestamps: {
+        source: string;
+    };
+}
+
+export interface IAnalysisProfile {
+    all: IAnalysisProfileDetails[];
+
+    default: string;
 }

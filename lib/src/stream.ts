@@ -1,13 +1,20 @@
 import { Transport } from '@bisect/bisect-core-ts';
-
 import { IFrameInfo } from './api/stream';
+import { IStreamInfo } from './types';
 
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Stream {
     public constructor(private readonly transport: Transport) {}
 
-    //Video
+    // Get stream info by id
+    public async getStreamInfo(pcapID: string, streamID: string | undefined): Promise<IStreamInfo> {
+        const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}`);
+        const streamInfo: IStreamInfo = response as IStreamInfo;
+        return streamInfo;
+    }
+
+    // Video
     public async getFramesFromStream(pcapID: string, streamID: string | undefined): Promise<IFrameInfo[]> {
         const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/frames`);
         const frames: IFrameInfo[] = response as IFrameInfo[];
@@ -18,7 +25,7 @@ export default class Stream {
         return this.transport.rest.getAuthUrl(`/api/pcap/${pcapID}/stream/${streamID}/frame/${timestamp}/png`);
     }
 
-    //Video Graphs - Cinst Line Chart
+    // Video Graphs - Cinst Line Chart
     public async getCInstForStream(
         pcapID: string,
         streamID: string | undefined,
@@ -32,14 +39,14 @@ export default class Stream {
         return cinstData;
     }
 
-    //Video Graphs - Cinst Bar Chart
+    // Video Graphs - Cinst Bar Chart
     public async getCInstHistogramForStream(pcapID: string, streamID: string | undefined): Promise<any> {
         const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/analytics/CInst/histogram`);
         const cinstData: any = response;
         return cinstData;
     }
 
-    //Video Graphs - Vrx Line Chart
+    // Video Graphs - Vrx Line Chart
     public async getVrxIdealForStream(
         pcapID: string,
         streamID: string | undefined,
@@ -55,14 +62,14 @@ export default class Stream {
         return vrxData;
     }
 
-    //Video Graphs - Vrx Bar Chart
+    // Video Graphs - Vrx Bar Chart
     public async getVrxHistogramForStream(pcapID: string, streamID: string | undefined): Promise<any> {
         const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/analytics/Vrx/histogram`);
         const vrxData: any = response;
         return vrxData;
     }
 
-    //Video Graphs - FTP Line Chart
+    // Video Graphs - FTP Line Chart
     public async getDeltaToIdealTpr0Raw(
         pcapID: string,
         streamID: string | undefined,
@@ -76,7 +83,7 @@ export default class Stream {
         return ftpData;
     }
 
-    //Video&Ancillary Graphs - RTP Latency Line Chart
+    // Video&Ancillary Graphs - RTP Latency Line Chart
     public async getDeltaPacketTimeVsRtpTimeRaw(
         pcapID: string,
         streamID: string | undefined,
@@ -90,7 +97,7 @@ export default class Stream {
         return latencyData;
     }
 
-    //Video Graphs - RTP Offset Line Chart
+    // Video Graphs - RTP Offset Line Chart
     public async getDeltaRtpVsNtRaw(
         pcapID: string,
         streamID: string | undefined,
@@ -104,7 +111,7 @@ export default class Stream {
         return rtpOffsetData;
     }
 
-    //Video&Ancillary Graphs - RTP Time Step Line Chart
+    // Video&Ancillary Graphs - RTP Time Step Line Chart
     public async getDeltaToPreviousRtpTsRaw(
         pcapID: string,
         streamID: string | undefined,
@@ -118,7 +125,7 @@ export default class Stream {
         return rtpOffsetData;
     }
 
-    //Audio
+    // Audio
     public async renderMp3(pcapID: string, streamID: string | undefined, channelsString: string): Promise<any> {
         const response = await this.transport.get(
             `/api/pcap/${pcapID}/stream/${streamID}/rendermp3?channels=${channelsString}`
@@ -133,20 +140,34 @@ export default class Stream {
         );
     }
 
-    //Audio Graphs - Delta Packect VS RTP Line Chart
-    public async getAudioPktTsVsRtpTs(
+    // Audio Graphs - Delta Packect VS RTP Line Chart
+    public async getAudioPktTsVsRtpTsRaw(
         pcapID: string,
         streamID: string | undefined,
         fromNs: string | undefined,
         toNs: string | undefined
     ): Promise<any> {
         const response = await this.transport.get(
-            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTs?from=${fromNs}&to=${toNs}`
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTsRaw?from=${fromNs}&to=${toNs}`
         );
         const data: any = response;
         return data;
     }
-    //Audio Graphs - TS-DF Line Chart
+    // Audio Graphs - Delta Packect VS RTP Line Chart (down-sampled)
+    public async getAudioPktTsVsRtpTsGrouped(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined,
+        groupNs: string | undefined
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTsGrouped?from=${fromNs}&to=${toNs}&group=${groupNs}`
+        );
+        const data: any = response;
+        return data;
+    }
+    // Audio Graphs - TS-DF Line Chart
     public async getAudioTimeStampedDelayFactor(
         pcapID: string,
         streamID: string | undefined,
@@ -162,7 +183,7 @@ export default class Stream {
         return data;
     }
 
-    //Ancillary
+    // Ancillary
     public downloadAncillaryUrl(pcapID: string, streamID: string | undefined, filename: string) {
         return this.transport.rest.getAuthUrl(`/api/pcap/${pcapID}/stream/${streamID}/ancillary/${filename}`);
     }
@@ -173,7 +194,7 @@ export default class Stream {
         return text;
     }
 
-    //Ancilary Graphs - Packets Per Frame Line Chart
+    // Ancilary Graphs - Packets Per Frame Line Chart
     public async getPacketsPerFrame(
         pcapID: string,
         streamID: string | undefined,
@@ -187,7 +208,7 @@ export default class Stream {
         return data;
     }
 
-    //Ancilary Graphs - Packets Per Frame Histogram Chart
+    // Ancilary Graphs - Packets Per Frame Histogram Chart
     public async getAncillaryPktPerFrameHistogram(pcapID: string, streamID: string | undefined): Promise<any> {
         const response = await this.transport.get(
             `/api/pcap/${pcapID}/stream/${streamID}/analytics/AncillaryPktHistogram`
