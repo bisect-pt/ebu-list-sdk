@@ -5,17 +5,47 @@ export interface IProblem {
     };
 }
 
-export interface IAnalysisProfileDetails {
+export interface IMinMaxAvg {
+    min: number;
+    avg: number;
+    max: number;
+}
+
+export type IAudioValueRange = [min: number | undefined, max: number | undefined, unit: 'packet_time' | 'μs'];
+
+export interface IAudioRtpProfile {
+    min: IAudioValueRange;
+    avg: IAudioValueRange;
+    max: IAudioValueRange;
+}
+
+export type IAudioValueRangeUs = [min: number | undefined, max: number | undefined];
+
+export interface IAudioRtpProfileUs {
+    min: IAudioValueRangeUs;
+    avg: IAudioValueRangeUs;
+    max: IAudioValueRangeUs;
+}
+
+export interface ITsdfProfile {
+    tolerance: number;
+    limit: number;
+    unit: 'packet_time';
+}
+
+export interface IAnalysisProfile {
     id: string;
     label: string;
     timestamps: {
-        source: string;
+        source: 'pcap' | 'ptp_packets';
     };
     audio: {
-        deltaPktTsVsRtpTsLimit: any;
-        tsdf: any;
+        deltaPktTsVsRtpTsLimit: IAudioRtpProfile;
+        tsdf: ITsdfProfile;
     };
 }
+
+export interface IAnalysisProfileDetails extends IAnalysisProfile {}
 
 export interface IPcapInfo {
     analyzed: boolean; // True if the analysis is thoroughly complete
@@ -236,6 +266,11 @@ export interface IStreamAnalyses {
     [key: string]: IStreamAnalysis;
 }
 
+export interface IAudioLatencyAnalysisDetails {
+    limit: IAudioRtpProfileUs,
+    range: IMinMaxAvg,
+}
+
 export interface IStreamAnalysis {
     result: 'compliant' | 'not_compliant' | 'disabled';
     details?: any;
@@ -269,4 +304,18 @@ export function isLocalPcapAnalysisParams(p: unknown): p is ILocalPcapAnalysisPa
     if (typeof (p as ILocalPcapAnalysisParams).name !== 'string') return false;
     if (typeof (p as ILocalPcapAnalysisParams).path !== 'string') return false;
     return true;
+}
+
+export const isAudioStream = (stream?: IStreamInfo): boolean => stream?.media_type === 'audio';
+
+export function isIST2110AudioInfo(info?: MediaSpecificInfo): info is IST2110AudioInfo {
+    if (!info) return false;
+
+    const v = info as IST2110AudioInfo;
+    return (
+        v.encoding !== undefined &&
+        v.number_channels !== undefined &&
+        v.packet_time !== undefined &&
+        v.sampling !== undefined
+    );
 }
