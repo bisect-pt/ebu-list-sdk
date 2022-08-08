@@ -5,10 +5,15 @@ export interface IProblem {
     };
 }
 
-export interface IMinMaxAvg {
+export type Compliance = 'compliant' | 'not_compliant' | 'disabled' | 'undefined';
+
+export interface IMinMax {
     min: number;
-    avg: number;
     max: number;
+}
+
+export interface IMinMaxAvg extends IMinMax {
+    avg: number;
 }
 
 export type IAudioValueRange = [min: number | undefined, max: number | undefined, unit: 'packet_time' | 'μs'];
@@ -30,7 +35,19 @@ export interface IAudioRtpProfileUs {
 export interface ITsdfProfile {
     tolerance: number;
     limit: number;
-    unit: 'packet_time';
+    unit: 'packet_time' | 'μs';
+}
+
+export interface ITsdfAnalysisDetails {
+    compliance: Compliance;
+    level: 'narrow' | 'wide' | 'not_compliant';
+    result: Compliance | 'undefined';
+    max: number;
+}
+
+export interface ITsdfAnalysis {
+    result: Compliance;
+    details: ITsdfAnalysisDetails & ITsdfProfile;
 }
 
 export interface IAnalysisProfile {
@@ -272,7 +289,7 @@ export interface IAudioLatencyAnalysisDetails {
 }
 
 export interface IStreamAnalysis {
-    result: 'compliant' | 'not_compliant' | 'disabled';
+    result: Compliance;
     details?: any;
 }
 
