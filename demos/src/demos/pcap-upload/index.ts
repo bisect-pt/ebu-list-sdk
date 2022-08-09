@@ -17,27 +17,30 @@ export const run = async (args: IArgs) => {
         await list.login(args.username, args.password);
 
         const stream = fs.createReadStream(pcapFile);
-        const name = path.basename(pcapFile, 'pcap')
+        const name = path.basename(pcapFile, 'pcap');
         const pcapId: string = uuid();
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
         const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
         const uploadAwaiter = list.pcap.makeUploadAwaiter(pcapId, timeoutMs);
-        await list.pcap.upload(name, stream, callback, pcapId);
+        await list.pcap.onlyInsertInDatabase(name, stream, callback, pcapId);
 
         // If on the same file system, could use the following
         // await list.pcap.uploadLocal(name, pcapFile, pcapId);
 
-        const uploadResult = await uploadAwaiter;
+        // const uploadResult = await uploadAwaiter;
 
-        if (!uploadResult) {
-            throw new Error('Pcap processing undefined');
-        }
+        // if (!uploadResult) {
+        //     throw new Error('Pcap processing undefined');
+        // }
         console.log(`Pcap Id: ${pcapId}`);
 
-        console.log(`Pcap: ${JSON.stringify(uploadResult)}`);
+        await list.pcap.reanalyze(pcapId);
+
+        // console.log(`Pcap: ${JSON.stringify(uploadResult)}`);
     } catch (err: any) {
-        console.error(`Error uploading file: ${err.toString()}`);
+        console.error(`Error uploading file`);
+        console.dir(err);
     } finally {
         await list.close();
     }
