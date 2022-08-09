@@ -29,11 +29,13 @@ export interface IAudioRtpProfile {
 
 export type IAudioValueRangeUs = [min: number | undefined, max: number | undefined];
 
-export interface IAudioRtpProfileUs {
+export interface IMinMaxAvgRange {
     min: IAudioValueRangeUs;
     avg: IAudioValueRangeUs;
     max: IAudioValueRangeUs;
 }
+
+export type IAudioRtpProfileUs = IMinMaxAvgRange;
 
 export interface ITsdfProfile {
     tolerance: number;
@@ -51,7 +53,19 @@ export interface ITsdfAnalysisDetails {
 export type MinMaxAvgUsRange = IMinMaxAvg & {
     unit: 'μs';
 };
+
+export interface IAudioLatencyAnalysisDetails {
+    limit: IAudioRtpProfileUs;
+    range: IMinMaxAvg;
+}
+
+export interface IAudioLatencyAnalysis {
+    result: Compliance;
+    details: IAudioLatencyAnalysisDetails;
+}
+
 export interface IAudioPitAnalysisDetails {
+    limit: IMinMaxAvgRange;
     range: MinMaxAvgUsRange;
 }
 
@@ -279,6 +293,7 @@ export interface IStreamProcessing {
 export interface IStreamAnalyses {
     [AnalysisNames.pit]: IAudioPitAnalysis;
     [AnalysisNames.tsdf]: ITsdfAnalysis;
+    [AnalysisNames.packet_ts_vs_rtp_ts]: IAudioLatencyAnalysis;
     '2110_21_cinst': any;
     '2110_21_vrx': any;
     anc_payloads: any, //
@@ -288,7 +303,6 @@ export interface IStreamAnalyses {
     inter_frame_rtp_ts_delta: any;
     mac_address_analysis: any;
     marker_bit: any; //
-    packet_ts_vs_rtp_ts: any;
     pkts_per_frame: any;
     rtp_sequence: any;
     rtp_ts_vs_nt: any;
@@ -315,11 +329,6 @@ export interface IStreamInfo {
     statistics: IStreamStatistics;
     analyses: IStreamAnalyses;
     processing: IStreamProcessing;
-}
-
-export interface IAudioLatencyAnalysisDetails {
-    limit: IAudioRtpProfileUs;
-    range: IMinMaxAvg;
 }
 
 export interface IStreamAnalysis {
