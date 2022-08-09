@@ -21,21 +21,24 @@ export interface IMinMaxAvg extends IMinMax {
 
 export type IAudioValueRange = [min: number | undefined, max: number | undefined, unit: 'packet_time' | 'μs'];
 
-export interface IAudioRtpProfile {
+export interface IMinMaxAvgRanges {
     min: IAudioValueRange;
     avg: IAudioValueRange;
     max: IAudioValueRange;
 }
+export interface IAudioRtpProfile extends IMinMaxAvgRanges {}
+
+export interface IAudioPitProfile extends IMinMaxAvgRanges {}
 
 export type IAudioValueRangeUs = [min: number | undefined, max: number | undefined];
 
-export interface IMinMaxAvgRange {
+export interface IMinMaxAvgUsRanges {
     min: IAudioValueRangeUs;
     avg: IAudioValueRangeUs;
     max: IAudioValueRangeUs;
 }
 
-export type IAudioRtpProfileUs = IMinMaxAvgRange;
+export type IAudioRtpProfileUs = IMinMaxAvgUsRanges;
 
 export interface ITsdfProfile {
     tolerance: number;
@@ -65,7 +68,7 @@ export interface IAudioLatencyAnalysis {
 }
 
 export interface IAudioPitAnalysisDetails {
-    limit: IMinMaxAvgRange;
+    limit?: IMinMaxAvgUsRanges;
     range: MinMaxAvgUsRange;
 }
 
@@ -79,19 +82,22 @@ export interface ITsdfAnalysis {
     details: ITsdfAnalysisDetails & ITsdfProfile;
 }
 
+export interface IAudioAnalysisProfile {
+    deltaPktTsVsRtpTsLimit: IAudioRtpProfile;
+    pit?: IAudioPitProfile;
+    tsdf: ITsdfProfile;
+}
+
 export interface IAnalysisProfile {
     id: string;
     label: string;
     timestamps: {
         source: 'pcap' | 'ptp_packets';
     };
-    audio: {
-        deltaPktTsVsRtpTsLimit: IAudioRtpProfile;
-        tsdf: ITsdfProfile;
-    };
+    audio: IAudioAnalysisProfile;
 }
 
-export interface IAnalysisProfileDetails extends IAnalysisProfile {}
+export type IAnalysisProfileDetails = IAnalysisProfile;
 
 export interface IPcapInfo {
     analyzed: boolean; // True if the analysis is thoroughly complete
