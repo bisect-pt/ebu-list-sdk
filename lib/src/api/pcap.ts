@@ -1,3 +1,6 @@
+import { compileFunction } from 'vm';
+import { AnalysisNames } from './analysis/names';
+
 export interface IProblem {
     stream_id: string | null; // If null, applies to the whole pcap, e.g. truncated
     value: {
@@ -41,8 +44,20 @@ export interface ITsdfProfile {
 export interface ITsdfAnalysisDetails {
     compliance: Compliance;
     level: 'narrow' | 'wide' | 'not_compliant';
-    result: Compliance | 'undefined';
+    result: Compliance;
     max: number;
+}
+
+export type MinMaxAvgUsRange = IMinMaxAvg & {
+    unit: 'μs';
+};
+export interface IAudioPitAnalysisDetails {
+    range: MinMaxAvgUsRange;
+}
+
+export interface IAudioPitAnalysis {
+    result: Compliance;
+    details: IAudioPitAnalysisDetails;
 }
 
 export interface ITsdfAnalysis {
@@ -261,6 +276,29 @@ export interface IStreamProcessing {
     extractedFrames: ProcessingState;
 }
 
+export interface IStreamAnalyses {
+    [AnalysisNames.pit]: IAudioPitAnalysis;
+    [AnalysisNames.tsdf]: ITsdfAnalysis;
+    '2110_21_cinst': any;
+    '2110_21_vrx': any;
+    anc_payloads: any, //
+    destination_multicast_ip_address: any;
+    destination_multicast_mac_address: any;
+    field_bits: any, //
+    inter_frame_rtp_ts_delta: any;
+    mac_address_analysis: any;
+    marker_bit: any; //
+    packet_ts_vs_rtp_ts: any;
+    pkts_per_frame: any;
+    rtp_sequence: any;
+    rtp_ts_vs_nt: any;
+    ttml_consistent_sequence_identifier: any;
+    ttml_inconsistent_sequence_identifier: any;
+    ttml_time_base_is_media: any;
+    unique_multicast_destination_ip_address: any;
+    unrelated_multicast_addresses: any;
+}
+
 export interface IStreamInfo {
     id: string; // Unique ID of the stream
     media_specific?: MediaSpecificInfo; // Not set if stream is unknown
@@ -279,13 +317,9 @@ export interface IStreamInfo {
     processing: IStreamProcessing;
 }
 
-export interface IStreamAnalyses {
-    [key: string]: IStreamAnalysis;
-}
-
 export interface IAudioLatencyAnalysisDetails {
-    limit: IAudioRtpProfileUs,
-    range: IMinMaxAvg,
+    limit: IAudioRtpProfileUs;
+    range: IMinMaxAvg;
 }
 
 export interface IStreamAnalysis {
