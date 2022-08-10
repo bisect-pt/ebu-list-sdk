@@ -1,4 +1,3 @@
-import { compileFunction } from 'vm';
 import { AnalysisNames } from './analysis/names';
 
 export interface IProblem {
@@ -99,6 +98,21 @@ export interface IAnalysisProfile {
 
 export type IAnalysisProfileDetails = IAnalysisProfile;
 
+// Maps network info to a media type from one SDP file
+export interface IMediaTypeMapEntry {
+    // <source> is only present if a source-filter is specified
+    source?: {
+        address: string;
+    },
+    destination: {
+        address: string;
+        port: number;
+    },
+    media_type: FullMediaType;
+};
+
+export type MediaTypeMapping = IMediaTypeMapEntry[]; 
+
 export interface IPcapInfo {
     analyzed: boolean; // True if the analysis is thoroughly complete
     analyzer_version: string; // The version of LIST when the analysis was done
@@ -121,9 +135,10 @@ export interface IPcapInfo {
     ttml_streams: number; // Number of ttml streams
     wide_streams: number; // ST2110-21
     srt_streams: number; // SRT
-    sdps: Array<string>; //Sdps array
+    sdps: string[]; // SDP documents
+    parsed_sdps: unknown[]; // sdpParser.SessionDescription
+    media_type_map: MediaTypeMapping; // Maps media types from SDP files to network info
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
-    sdp_count: number;
 }
 
 export interface PcapFileProcessingDone {
@@ -213,6 +228,7 @@ export type FullMediaType =
     | 'video/jxsv'
     | 'audio/L24'
     | 'audio/L16'
+    | 'audio/AM824'
     | 'video/smpte291'
     | 'application/ttml+xml'
     | 'unknown';
