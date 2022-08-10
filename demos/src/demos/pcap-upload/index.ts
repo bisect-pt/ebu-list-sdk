@@ -1,5 +1,6 @@
 import { LIST, types } from '@bisect/ebu-list-sdk';
 import fs from 'fs';
+import {readFile} from 'fs/promises';
 import path from 'path';
 import { v1 as uuid } from 'uuid';
 import { IArgs } from '../../types';
@@ -22,8 +23,8 @@ export const run = async (args: IArgs) => {
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
         const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
-        const uploadAwaiter = list.pcap.makeUploadAwaiter(pcapId, timeoutMs);
-        await list.pcap.onlyInsertInDatabase(name, stream, callback, pcapId);
+        //const uploadAwaiter = list.pcap.makeUploadAwaiter(pcapId, timeoutMs);
+        const result = await list.pcap.onlyInsertInDatabase(name, stream, callback, pcapId);
 
         // If on the same file system, could use the following
         // await list.pcap.uploadLocal(name, pcapFile, pcapId);
@@ -34,6 +35,12 @@ export const run = async (args: IArgs) => {
         //     throw new Error('Pcap processing undefined');
         // }
         console.log(`Pcap Id: ${pcapId}`);
+
+        if(args.sdp) {
+            const sdp = await readFile(args.sdp);
+            const patch = {sdps: [sdp.toString()]};
+            await list.pcap.patch(pcapId, patch);
+        }
 
         await list.pcap.reanalyze(pcapId);
 
