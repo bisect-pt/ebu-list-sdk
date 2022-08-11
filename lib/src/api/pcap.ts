@@ -18,7 +18,9 @@ export interface IMinMaxAvg extends IMinMax {
     avg: number;
 }
 
-export type IAudioValueRange = [min: number | undefined, max: number | undefined, unit: 'packet_time' | 'μs'];
+export type AudioTimeUnit = 'packet_time' | 'μs';
+
+export type IAudioValueRange = { min: number | undefined; max: number | undefined; unit: AudioTimeUnit };
 
 export interface IMinMaxAvgRanges {
     min: IAudioValueRange;
@@ -29,7 +31,7 @@ export interface IAudioRtpProfile extends IMinMaxAvgRanges {}
 
 export interface IAudioPitProfile extends IMinMaxAvgRanges {}
 
-export type IAudioValueRangeUs = [min: number | undefined, max: number | undefined];
+export type IAudioValueRangeUs = { min: number | undefined; max: number | undefined };
 
 export interface IMinMaxAvgUsRanges {
     min: IAudioValueRangeUs;
@@ -42,7 +44,7 @@ export type IAudioRtpProfileUs = IMinMaxAvgUsRanges;
 export interface ITsdfProfile {
     tolerance: number;
     limit: number;
-    unit: 'packet_time' | 'μs';
+    unit: AudioTimeUnit;
 }
 
 export interface ITsdfAnalysisDetails {
@@ -103,15 +105,15 @@ export interface IMediaTypeMapEntry {
     // <source> is only present if a source-filter is specified
     source?: {
         address: string;
-    },
+    };
     destination: {
         address: string;
         port: number;
-    },
+    };
     media_type: FullMediaType;
-};
+}
 
-export type MediaTypeMapping = IMediaTypeMapEntry[]; 
+export type MediaTypeMapping = IMediaTypeMapEntry[];
 
 export interface IPcapInfo {
     analyzed: boolean; // True if the analysis is thoroughly complete
@@ -138,7 +140,7 @@ export interface IPcapInfo {
     sdps?: string[]; // SDP documents
     parsed_sdps?: unknown[]; // sdpParser.SessionDescription
     media_type_map?: MediaTypeMapping; // Maps media types from SDP files to network info
-    transport_type: FullTransportType,
+    transport_type: FullTransportType;
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
 }
 
@@ -318,11 +320,13 @@ export interface IStreamAnalyses {
     [AnalysisNames.tsdf]: ITsdfAnalysis;
     [AnalysisNames.packet_ts_vs_rtp_ts]: IAudioLatencyAnalysis;
     '2110_21_cinst': any;
-    '2110_21_vrx': any;
-    anc_payloads: any, //
+    '2110_21_vrx': {
+        result: Compliance;
+    };
+    anc_payloads: any; //
     destination_multicast_ip_address: any;
     destination_multicast_mac_address: any;
-    field_bits: any, //
+    field_bits: any; //
     inter_frame_rtp_ts_delta: any;
     mac_address_analysis: any;
     marker_bit: any; //
@@ -336,6 +340,48 @@ export interface IStreamAnalyses {
     unrelated_multicast_addresses: any;
 }
 
+export type Dash21Compliance = 'narrow' | 'wide' | 'not_compliant';
+
+// Meant for internal use
+export interface IGlobalVideoAnalysis {
+    compliance: Dash21Compliance;
+    cinst: {
+        cmax_narrow: number;
+        cmax_wide: number;
+        compliance: Dash21Compliance;
+    };
+    vrx: {
+        compliance: Dash21Compliance;
+        vrx_full_narrow: number;
+        vrx_full_wide: number;
+    };
+    trs: {
+        trs_ns: number;
+    };
+}
+
+export interface ITsdfGlobalDetails extends ITsdfProfile {
+    compliance: Compliance;
+    level: 'narrow' | 'wide' | 'not_compliant';
+    result: Compliance;
+    max: number;
+    tolerance: number;
+    limit: number;
+    unit: 'μs';
+}
+
+export interface IAudioLatencyGlobalDetails {
+    range: IMinMaxAvg;
+    limit: IMinMaxAvgUsRanges;
+    unit: AudioTimeUnit;
+}
+
+// Meant for internal use
+export interface IGlobalAudioAnalysis {
+    tsdf: ITsdfGlobalDetails;
+    packet_ts_vs_rtp_ts: IAudioLatencyGlobalDetails;
+}
+
 export interface IStreamInfo {
     id: string; // Unique ID of the stream
     media_specific?: MediaSpecificInfo; // Not set if stream is unknown
@@ -345,12 +391,12 @@ export interface IStreamInfo {
     full_transport_type: FullTransportType;
     media_type_validation?: IMediaTypeValidation;
     network_information: INetworkInformation;
-    global_video_analysis?: any;
-    global_audio_analysis?: any;
+    global_video_analysis?: Partial<IGlobalVideoAnalysis>;
+    global_audio_analysis?: Partial<IGlobalAudioAnalysis>;
     pcap: string; // The id of the pcap on which this stream is contained
     state: StreamState;
     statistics: IStreamStatistics;
-    analyses: IStreamAnalyses;
+    analyses: Partial<IStreamAnalyses>;
     processing: IStreamProcessing;
 }
 
