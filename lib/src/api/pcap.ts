@@ -135,9 +135,9 @@ export interface IPcapInfo {
     ttml_streams: number; // Number of ttml streams
     wide_streams: number; // ST2110-21
     srt_streams: number; // SRT
-    sdps: string[]; // SDP documents
-    parsed_sdps: unknown[]; // sdpParser.SessionDescription
-    media_type_map: MediaTypeMapping; // Maps media types from SDP files to network info
+    sdps?: string[]; // SDP documents
+    parsed_sdps?: unknown[]; // sdpParser.SessionDescription
+    media_type_map?: MediaTypeMapping; // Maps media types from SDP files to network info
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
 }
 
