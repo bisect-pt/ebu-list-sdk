@@ -138,6 +138,7 @@ export interface IPcapInfo {
     sdps?: string[]; // SDP documents
     parsed_sdps?: unknown[]; // sdpParser.SessionDescription
     media_type_map?: MediaTypeMapping; // Maps media types from SDP files to network info
+    transport_type: FullTransportType,
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
 }
 
