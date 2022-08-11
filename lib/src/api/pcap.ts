@@ -68,6 +68,16 @@ export interface IAudioLatencyAnalysis {
     details: IAudioLatencyAnalysisDetails;
 }
 
+export interface IRtpTsVsNtAnalysisDetails {
+    range: IMinMaxAvg;
+    limit: IMinMax;
+    unit: 'ticks';
+}
+
+export interface IRtpTsVsNtAnalysis {
+    result: Compliance;
+    details: IRtpTsVsNtAnalysisDetails;
+}
 export interface IAudioPitAnalysisDetails {
     limit?: IMinMaxAvgUsRanges;
     range: MinMaxAvgUsRange;
@@ -332,7 +342,7 @@ export interface IStreamAnalyses {
     marker_bit: any; //
     pkts_per_frame: any;
     rtp_sequence: any;
-    rtp_ts_vs_nt: any;
+    rtp_ts_vs_nt: IRtpTsVsNtAnalysis;
     ttml_consistent_sequence_identifier: any;
     ttml_inconsistent_sequence_identifier: any;
     ttml_time_base_is_media: any;
