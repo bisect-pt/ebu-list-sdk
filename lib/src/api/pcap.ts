@@ -99,14 +99,13 @@ export interface IAudioAnalysisProfile {
     tsdf: ITsdfProfile;
 }
 
-export type IRtpOffsetValidation =
-    | {
-          /// This is a workaround to use the old validation type baed on TRoffset, which was deemed incorrect
-          use_old_validation: true;
-      }
-    | {
-          limits: IMinMax & { unit: 'ticks' };
-      };
+/// This is a workaround to use the old validation type baed on TRoffset, which was deemed incorrect
+type UseTrOffset = { type: 'use_troffset' };
+
+/// New profiles should use this
+type UseLimit = { type: 'use_ticks'; limit: IMinMax };
+
+export type IRtpOffsetValidation = UseTrOffset | UseLimit;
 
 export type Validations = {
     rtp_ts_vs_nt?: IRtpOffsetValidation;
