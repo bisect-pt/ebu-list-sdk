@@ -87,7 +87,7 @@ export default class LIST {
         this.authClient.close();
     }
 
-    public get wsClient(): SocketIOClient.Socket | undefined {
+    public get wsClient(): WSCLient['client'] | undefined {
         return this.ws?.client;
     }
 
